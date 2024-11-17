@@ -14,7 +14,7 @@ const generateAccessTokenandRefreshToken = async (userId) => {
         const accessToken = await user.generateAccessToken();
         const refreshToken = await user.generateRefreshToken();
 
-        user.accessToken = accessToken;
+       // user.accessToken = accessToken;
         user.refreshToken = refreshToken;
 
         // //ab agar user ko save krenge to validate krega to bolega fulname , password is empty
@@ -57,24 +57,24 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     //checking if user already exists
-    // const existingUser = await User.findOne({
-    //     $or : [username,email]
-    // })
-
-    // if(existingUser){
-    //     throw new ApiError(409,"User with this email or username already exists");
+    const existingUser = await User.findOne({
+        $or : [{username},{email}]
+    })
+  
+    if(existingUser){
+        throw new ApiError(409,"User with this email or username already exists");
+    }
+    // if (await User.findOne({ username })) {
+    //     throw new ApiError(409, "User with this username already exists");
     // }
-    if (await User.findOne({ username })) {
-        throw new ApiError(409, "User with this username already exists");
-    }
-    if (await User.findOne({ email })) {
-        throw new ApiError(409, "User with this email already exists");
-    }
+    // if (await User.findOne({ email })) {
+    //     throw new ApiError(409, "User with this email already exists");
+    // }
 
     const avatarLocalPath = req.files?.avatar[0]?.path;
     let coverImageLocalPath;
 
-    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.lenght > 0) {
+    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
         coverImageLocalPath = req.files?.coverImage[0]?.path;
     }
 
