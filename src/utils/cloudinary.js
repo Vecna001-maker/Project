@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from 'cloudinary';
 import fs from 'fs';
 import dotenv from 'dotenv';
+import { ApiError } from './ApiError.js';
 
 dotenv.config({
     path:'./.env'
@@ -47,5 +48,28 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
+
+//we get url has https://res.cloudinary.com/dbfiawivy/image/upload/v1731851653/ggcw2ejyspfhniqocymz.jpg
+//this is ggcw2ejyspfhniqocymz publicId , we need this to destrop image , so extracting it
+const extractPublicId = (url) => {
+  const parts = url.split('/');
+  const publicIdWithExtension = parts[parts.length - 1]; // "ggcw2ejyspfhniqocymz.jpg"
+  const publicId = publicIdWithExtension.split('.')[0]; // Remove ".jpg"
+  return publicId;
+};
+
+const deleteFromCloudinary = async (url) => {
+  try {
+      const publicId = extractPublicId(url); // Extract public_id
+      const response = await cloudinary.uploader.destroy(publicId);
+      console.log('Deletion successful:', response);
+      return response;
+  } catch (error) {
+      console.error('Error deleting the file from Cloudinary:', error.message);
+      return null;
+  }
+};
+
+
 // Export the upload function
-export { uploadOnCloudinary };
+export { uploadOnCloudinary ,deleteFromCloudinary};
